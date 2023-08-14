@@ -28,6 +28,17 @@ app.get("/", (request, response) => {
   response.send("<h1>Hello World!</h1>");
 });
 
+app.get("/info", (request, response) => {
+  let startReq = new Date();
+  response.send(
+    `<p>Phonebook has info for ${entries.length} ${
+      entries.length > 1 ? "people" : "person"
+    }</p>
+    <p>${startReq}</p>
+    `
+  );
+});
+
 app.get("/api/persons", (request, response) => {
   response.json(entries);
 });
