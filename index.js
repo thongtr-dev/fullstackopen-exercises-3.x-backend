@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+app.use(express.json());
+
 let entries = [
   {
     id: 1,
@@ -23,6 +25,9 @@ let entries = [
     number: "39-23-6423122",
   },
 ];
+
+const MIN = 5;
+const MAX = 2000;
 
 app.get("/", (request, response) => {
   response.send("<h1>Hello World!</h1>");
@@ -58,6 +63,35 @@ app.delete("/api/persons/:id", (request, response) => {
   entries = entries.filter((e) => e.id !== id);
 
   response.status(204).end();
+});
+
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
+  if (!body.name) {
+    return response.status(400).json({
+      error: "name missing",
+    });
+  }
+  if (!body.number) {
+    return response.status(400).json({
+      error: "number missing",
+    });
+  }
+  const exist = entries.some(
+    (e) => e.name.toLowerCase() === body.name.toLowerCase()
+  );
+  if (exist) {
+    return response.status(400).json({
+      error: "name must be unique",
+    });
+  }
+  const entry = {
+    id: Math.floor(Math.random() * (MAX - MIN) + MIN),
+    name: body.name,
+    number: body.number,
+  };
+  entries.concat(entry);
+  response.json(entry);
 });
 
 const PORT = 3001;
