@@ -1,7 +1,23 @@
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 
 app.use(express.json());
+app.use(
+  morgan((tokens, request, response) => {
+    const data = request.body;
+    return [
+      tokens.method(request, response),
+      tokens.url(request, response),
+      tokens.status(request, response),
+      tokens.res(request, response, "content-length"),
+      "-",
+      tokens["response-time"](request, response),
+      "ms",
+      JSON.stringify(data),
+    ].join(" ");
+  })
+);
 
 let entries = [
   {
