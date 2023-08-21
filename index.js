@@ -1,7 +1,9 @@
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const app = express();
 
+app.use(cors());
 app.use(express.json());
 app.use(
   morgan((tokens, request, response) => {
@@ -18,27 +20,28 @@ app.use(
     ].join(" ");
   })
 );
+app.use(express.static("dist"));
 
 let entries = [
   {
     id: 1,
     name: "Arto Hellas",
-    number: "040-123456",
+    phone: "040-123456",
   },
   {
     id: 2,
     name: "Ada Lovelace",
-    number: "39-44-5323523",
+    phone: "39-44-5323523",
   },
   {
     id: 3,
     name: "Dan Abramov",
-    number: "12-43-234345",
+    phone: "12-43-234345",
   },
   {
     id: 4,
     name: "Mary Poppendieck",
-    number: "39-23-6423122",
+    phone: "39-23-6423122",
   },
 ];
 
@@ -88,7 +91,7 @@ app.post("/api/persons", (request, response) => {
       error: "name missing",
     });
   }
-  if (!body.number) {
+  if (!body.phone) {
     return response.status(400).json({
       error: "number missing",
     });
@@ -104,13 +107,13 @@ app.post("/api/persons", (request, response) => {
   const entry = {
     id: Math.floor(Math.random() * (MAX - MIN) + MIN),
     name: body.name,
-    number: body.number,
+    phone: body.phone,
   };
-  entries.concat(entry);
+  entries = entries.concat(entry);
   response.json(entry);
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
